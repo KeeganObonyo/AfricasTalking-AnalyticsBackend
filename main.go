@@ -16,8 +16,8 @@ func main() {
 
 	//The urls
 	router.HandleFunc("/", Home).Name("Home")
-	router.HandleFunc("/bar/graph/", GetBarGraph).Name("get_bar_graph")
-	router.HandleFunc("/pie/chart/", GetPieChart).Name("get_pie_chart")
+	router.HandleFunc("/bar/graph/", GetGraph).Name("get_bar_graph")
+	router.HandleFunc("/pie/chart/", GetGraph).Name("get_pie_chart")
     router.Walk(WalkFunc)
 
 	server := &http.Server{
