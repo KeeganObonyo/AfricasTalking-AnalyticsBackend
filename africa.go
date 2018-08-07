@@ -83,6 +83,8 @@ func (repo Repositories) languages() map[string]float64{
 // /bar/graph/
 
 // /pie/chart/
+
+//Functions for serving the computed data as json to the client side
 func GetGraph(writer http.ResponseWriter, request *http.Request) {
 	auto := Repositories{}
 	response, err := http.Get("https://api.github.com/orgs/AfricasTalkingLtd/repos")
