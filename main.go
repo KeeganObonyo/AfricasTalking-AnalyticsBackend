@@ -10,7 +10,7 @@ import (
 var path_details []string
 
 func main() {
-	p("Basic QUANT APP", version(), "started at Adress:", config.Address, "\n", time.Now())
+	p("AFRICASTALKING REPO ANALYTICS", version(), "started at Adress:", config.Address, "\n", time.Now())
 
     router := mux.NewRouter()
 
