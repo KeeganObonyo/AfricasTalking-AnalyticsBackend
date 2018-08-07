@@ -32,7 +32,7 @@ func main() {
 }
 
 //home
-//lists urls
+//lists urls at API homepage
 func Home(writer http.ResponseWriter, request *http.Request) {
 	{
 		writer.Header().Set("Content-Type", "application/json")
@@ -43,7 +43,7 @@ func Home(writer http.ResponseWriter, request *http.Request) {
 	}
 
 }
-
+//Function for retrieving url details 
 func WalkFunc(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
     url,_:=route.URLPath()
     path_details= append(path_details,url.Path)
