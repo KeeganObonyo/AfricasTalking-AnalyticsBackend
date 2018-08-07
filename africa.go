@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"math"
 )
 
 const (
@@ -34,75 +35,117 @@ func (repo Repositories) commit() map[string]int{
 	}
 	return commit_numbers
 }
-//function to return map[string]string of the languages from the public repos
-func (repo Repositories) languages() map[string]string{
-	repo_languages:=make(map[string]string)
+
+//function to return map[string]float64 of the language percentages from the public repos data
+func (repo Repositories) languages() map[string]float64{
+	language_percentages:=make(map[string]float64)
+	language_maping:=make(map[string]bool)
+	var languages []string
 	for k := range repo {
-		repo_languages[repo[k].Name]=repo[k].Language
+		languages=append(languages,repo[k].Language)
 	}
-	return repo_languages
+
+	//generating a list of the languages without repetition
+	for i :=0;i<len(languages);i++{
+		language_maping[languages[i]]=true
+	}
+	var non_repetitive []string
+	for k :=range language_maping{
+		non_repetitive=append(non_repetitive,k)
+	}
+
+	//counting the numbber of times a language occurs and append to the map
+	language_frequency:=make(map[string]int)
+	z:=0
+	for _,v:= range non_repetitive{
+		language_frequency[v]=z
+			for item,_ := range languages{
+				if languages[item]==v{
+					z++
+				}else{
+					continue
+				}
+		}
+	}
+	//Calculating the percentages
+	var total int = 0	
+	for _,v := range language_frequency{
+		total += v
+	}
+	for k,v := range language_frequency{
+		language_percentages[k]=math.Round((float64(v)/float64(total))*100) / 100
+	}
+	return language_percentages
 }
+
+
 //get graph data
 // /bar/graph/
-func GetBarGraph(writer http.ResponseWriter, request *http.Request) {
+
+// /pie/chart/
+func GetGraph(writer http.ResponseWriter, request *http.Request) {
 	auto := Repositories{}
 	response, err := http.Get("https://api.github.com/orgs/AfricasTalkingLtd/repos")
 	if err != nil {
-		fmt.Println("Error getting data from alphavantage")
+		fmt.Println("Error getting data from the API")
 	}
-	responsedata, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		fmt.Println("Error getting data from alphavantage")
-	}
-	response.Body.Close()
-	json.Unmarshal(responsedata, &auto)
-	news:=auto.commit()
-	if err != nil {
+	//using switch case statements to combine the two functionalities on one function to the server mux
+	switch{
+		//Bar graph data
+	case request.Method=="GET" && request.URL.Path=="/bar/graph/" :
 		{
-			writer.Header().Set("Content-Type", "application/json")
-			writer.WriteHeader(http.StatusInternalServerError)
-			fmt.Println(http.StatusInternalServerError)
-			fmt.Println(err)
+			responsedata, err := ioutil.ReadAll(response.Body)
+			if err != nil {
+				fmt.Println("Error getting data")
+				fmt.Println(request.URL.Path,http.StatusInternalServerError)
+				fmt.Println(err)
+			}
+			response.Body.Close()
+			json.Unmarshal(responsedata, &auto)
+			news:=auto.commit()
+			if err != nil {
+				{
+					writer.Header().Set("Content-Type", "application/json")
+					writer.WriteHeader(http.StatusInternalServerError)
+					fmt.Println(request.URL.Path,http.StatusInternalServerError)
+					fmt.Println(err)
+				}
+			} else {
+				writer.Header().Set("Content-Type", "application/json")
+				writer.WriteHeader(http.StatusOK)
+				encoder := json.NewEncoder(writer)
+				encoder.SetIndent(empty, tab)
+				encoder.Encode(news)
+				fmt.Println(request.URL.Path, http.StatusOK)
+			}
 		}
-	} else {
-		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(http.StatusOK)
-		encoder := json.NewEncoder(writer)
-		encoder.SetIndent(empty, tab)
-		encoder.Encode(news)
-		fmt.Println(request.URL.Path, http.StatusOK)
+		//Pie chart graph data
+	case request.Method=="GET" && request.URL.Path=="/pie/chart/":
+		{
+			responsedata, err := ioutil.ReadAll(response.Body)
+			if err != nil {
+				fmt.Println("Error getting data")
+				fmt.Println(request.URL.Path,http.StatusInternalServerError)
+				fmt.Println(err)
+			}
+			response.Body.Close()
+			json.Unmarshal(responsedata, &auto)
+			news:=auto.commit()
+			if err != nil {
+				{
+					writer.Header().Set("Content-Type", "application/json")
+					writer.WriteHeader(http.StatusInternalServerError)
+					fmt.Println(request.URL.Path,http.StatusInternalServerError)
+					fmt.Println(err)
+				}
+			} else {
+				writer.Header().Set("Content-Type", "application/json")
+				writer.WriteHeader(http.StatusOK)
+				encoder := json.NewEncoder(writer)
+				encoder.SetIndent(empty, tab)
+				encoder.Encode(news)
+				fmt.Println(request.URL.Path, http.StatusOK)
+			}
+		}
 	}
-}
-
-
-// get pie chart data
-// /pie/chart/
-func GetPieChart(writer http.ResponseWriter, request *http.Request) {
-// 	auto := Repositories{}
-// 	response, err := http.Get("https://api.github.com/orgs/AfricasTalkingLtd/repos")
-// 	if err != nil {
-// 		fmt.Println("Error getting data from alphavantage")
-// 	}
-// 	responsedata, err := ioutil.ReadAll(response.Body)
-// 	if err != nil {
-// 		fmt.Println("Error getting data from alphavantage")
-// 	}
-// 	response.Body.Close()
-// 	json.Unmarshal(responsedata, &auto)
-// 	languages:=auto.languages()
-// 	if err != nil {
-// 		{
-// 			writer.Header().Set("Content-Type", "application/json")
-// 			writer.WriteHeader(http.StatusInternalServerError)
-// 			fmt.Println(http.StatusInternalServerError)
-// 			fmt.Println(err)
-// 		}
-// 	} else {
-// 		writer.Header().Set("Content-Type", "application/json")
-// 		writer.WriteHeader(http.StatusOK)
-// 		encoder := json.NewEncoder(writer)
-// 		encoder.SetIndent(empty, tab)
-// 		encoder.Encode(languages)
-// 		fmt.Println(request.URL.Path, http.StatusOK)
-// 	}
 }
