@@ -102,7 +102,7 @@ func GetGraph(writer http.ResponseWriter, request *http.Request) {
 			}
 			response.Body.Close()
 			json.Unmarshal(responsedata, &auto)
-			news:=auto.commit()
+			bar_graph:=auto.commit()
 			if err != nil {
 				{
 					writer.Header().Set("Content-Type", "application/json")
@@ -115,7 +115,7 @@ func GetGraph(writer http.ResponseWriter, request *http.Request) {
 				writer.WriteHeader(http.StatusOK)
 				encoder := json.NewEncoder(writer)
 				encoder.SetIndent(empty, tab)
-				encoder.Encode(news)
+				encoder.Encode(bar_graph)
 				fmt.Println(request.URL.Path, http.StatusOK)
 			}
 		}
@@ -130,7 +130,7 @@ func GetGraph(writer http.ResponseWriter, request *http.Request) {
 			}
 			response.Body.Close()
 			json.Unmarshal(responsedata, &auto)
-			news:=auto.commit()
+			pie_chart:=auto.commit()
 			if err != nil {
 				{
 					writer.Header().Set("Content-Type", "application/json")
@@ -143,7 +143,7 @@ func GetGraph(writer http.ResponseWriter, request *http.Request) {
 				writer.WriteHeader(http.StatusOK)
 				encoder := json.NewEncoder(writer)
 				encoder.SetIndent(empty, tab)
-				encoder.Encode(news)
+				encoder.Encode(pie_chart)
 				fmt.Println(request.URL.Path, http.StatusOK)
 			}
 		}
