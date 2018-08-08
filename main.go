@@ -9,6 +9,7 @@ import (
 
 var path_details []string
 
+//Server configuration
 func main() {
 	p("AFRICASTALKING REPO ANALYTICS", version(), "started at Adress:", config.Address, "\n", time.Now())
 
