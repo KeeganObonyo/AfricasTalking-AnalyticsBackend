@@ -39,10 +39,11 @@ func (repo Repositories) commit() []map[string]interface{}{
 	return commit_data
 }
 
-//function to return map[string]float64 of the language percentages from the public repos data
-func (repo Repositories) languages() map[string]float64{
-	language_percentages:=make(map[string]float64)
+//function to return alist of  map[string]interface{} of the language percentages from the public repos data
+func (repo Repositories) languages()[]map[string]interface{}{
+	language_percentages:=make(map[string]interface{})
 	language_maping:=make(map[string]bool)
+	var piechart_data []map[string]interface{}
 	var languages []string
 	for k := range repo {
 		languages=append(languages,repo[k].Language)
@@ -76,9 +77,12 @@ func (repo Repositories) languages() map[string]float64{
 		total += v
 	}
 	for k,v := range language_frequency{
-		language_percentages[k]=math.Round((float64(v)/float64(total))*100) / 100
+		language_percentages["percentage"]=math.Round((float64(v)/float64(total))*100) / 100
+		language_percentages["language_name"]=k
+		piechart_data=append(piechart_data,language_percentages)
+
 	}
-	return language_percentages
+	return piechart_data
 }
 
 
