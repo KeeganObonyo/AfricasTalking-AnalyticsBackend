@@ -14,10 +14,11 @@ const (
 	tab   = "\t"
 )
 
-//method to return the data as a map[string]int of the commits per repository
-func (repo Repositories) commit() map[string]int{
-	commit_numbers:=make(map[string]int)
+//method to return the data as a list of map[string]interface{} of the commits per repository
+func (repo Repositories) commit() []map[string]interface{}{
+	commit_numbers:=make(map[string]interface{})
 	var commit_list []interface{}
+	var commit_data []map[string]interface{}
 	for k := range repo {
 		commitURL := repo[k].CommitsURL
 		commitURL = strings.Replace(commitURL, "{/sha}", "",-1)
@@ -31,9 +32,11 @@ func (repo Repositories) commit() map[string]int{
 		}
 		commits.Body.Close()
 		json.Unmarshal(commitsdata, &commit_list)
-		commit_numbers[repo[k].Name]=len(commit_list)
+		commit_numbers["repo_name"]=repo[k].Name
+		commit_numbers["no_of_commits"]=len(commit_list)
+		commit_data=append(commit_data,commit_numbers)
 	}
-	return commit_numbers
+	return commit_data
 }
 
 //function to return map[string]float64 of the language percentages from the public repos data
