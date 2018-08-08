@@ -16,10 +16,10 @@ const (
 
 //method to return the data as a list of map[string]interface{} of the commits per repository
 func (repo Repositories) commit() []map[string]interface{}{
-	commit_numbers:=make(map[string]interface{})
 	var commit_list []interface{}
 	var commit_data []map[string]interface{}
 	for k := range repo {
+		commit_numbers:=make(map[string]interface{})
 		commitURL := repo[k].CommitsURL
 		commitURL = strings.Replace(commitURL, "{/sha}", "",-1)
 		commits, err := http.Get(commitURL)
@@ -139,7 +139,7 @@ func GetGraph(writer http.ResponseWriter, request *http.Request) {
 			}
 			response.Body.Close()
 			json.Unmarshal(responsedata, &auto)
-			pie_chart:=auto.commit()
+			pie_chart:=auto.languages()
 			if err != nil {
 				{
 					writer.Header().Set("Content-Type", "application/json")
